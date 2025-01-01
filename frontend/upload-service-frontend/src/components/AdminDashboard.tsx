@@ -28,7 +28,6 @@ export function AdminDashboard() {
 
   return (
       <div className="space-y-8 max-w-7xl mx-auto mt-8 px-4">
-        <h1 className="text-3xl font-bold text-center mb-8">Admin Dashboard</h1>
         <Card>
           <CardHeader>
             <CardTitle>Create New Project</CardTitle>
@@ -50,4 +49,3 @@ export function AdminDashboard() {
       </div>
   );
 }
-
