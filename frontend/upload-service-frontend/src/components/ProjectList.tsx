@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useApi } from "../hooks/useApi";
 import { Button } from "@shadcn/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@shadcn/components/ui/card";
 
 interface Project {
   id: number
@@ -36,23 +37,27 @@ export function ProjectList() {
     }
   }
 
-  if (isLoading) return <div>Loading projects...</div>
-  if (error) return <div>Error: {error}</div>
+  if (isLoading) return <div className="text-center">Loading projects...</div>
+  if (error) return <div className="text-red-500 text-center">Error: {error}</div>
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">Projects</h2>
-      <ul className="space-y-2">
-        {projects.map((project) => (
-          <li key={project.id} className="flex justify-between items-center">
-            <span>{project.name} (Created: {new Date(project.created_at).toLocaleDateString()})</span>
-            <Button onClick={() => handleDeleteProject(project.id)} variant="destructive">
-              Delete
-            </Button>
-          </li>
-        ))}
-      </ul>
-    </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Projects</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2">
+            {projects.map((project) => (
+                <li key={project.id} className="flex justify-between items-center p-2 bg-gray-100 rounded">
+                  <span>{project.name} <span className="text-sm text-gray-500">(Created: {new Date(project.created_at).toLocaleDateString()})</span></span>
+                  <Button onClick={() => handleDeleteProject(project.id)} variant="destructive" size="sm">
+                    Delete
+                  </Button>
+                </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
   )
 }
 

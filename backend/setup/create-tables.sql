@@ -13,6 +13,7 @@ CREATE TABLE upload_files
     student_name VARCHAR(255) NOT NULL,
     project_id   INT          NOT NULL,
     file_path    TEXT         NOT NULL,
+    file_name    VARCHAR(255) NOT NULL,
     uploaded_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (project_id) REFERENCES upload_projects (id)
         ON DELETE CASCADE

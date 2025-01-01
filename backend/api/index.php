@@ -144,10 +144,11 @@ function uploadFiles()
         $fileName = basename($_FILES['files']['name'][$index]);
         $filePath = "$uploadDir/$fileName";
         if (move_uploaded_file($tmpName, $filePath)) {
-            $stmt = $db->prepare("INSERT INTO upload_files (student_name, project_id, file_path) VALUES (:student_name, :project_id, :file_path)");
+            $stmt = $db->prepare("INSERT INTO upload_files (student_name, project_id, file_name, file_path) VALUES (:student_name, :project_id, :file_name, :file_path)");
             $stmt->execute([
                 ':student_name' => $studentName,
                 ':project_id' => $projectId,
+                ':file_name' => $fileName,
                 ':file_path' => $filePath
             ]);
         }

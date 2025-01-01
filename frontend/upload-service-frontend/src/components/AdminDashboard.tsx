@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useApi } from '../hooks/useApi';
 import { ProjectList } from './ProjectList';
 import { UploadsList } from './UploadsList';
 import { Input } from "@shadcn/components/ui/input";
 import { Button } from "@shadcn/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@shadcn/components/ui/card";
 
 export function AdminDashboard() {
   const [newProjectName, setNewProjectName] = useState('');
@@ -22,26 +23,31 @@ export function AdminDashboard() {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (isLoading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  if (error) return <div className="text-red-500 text-center">Error: {error}</div>;
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Create New Project</h2>
-        <form onSubmit={handleCreateProject} className="flex gap-4">
-          <Input
-            value={newProjectName}
-            onChange={(e) => setNewProjectName(e.target.value)}
-            placeholder="Enter project name"
-          />
-          <Button type="submit">Create Project</Button>
-        </form>
+      <div className="space-y-8 max-w-7xl mx-auto mt-8 px-4">
+        <h1 className="text-3xl font-bold text-center mb-8">Admin Dashboard</h1>
+        <Card>
+          <CardHeader>
+            <CardTitle>Create New Project</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleCreateProject} className="flex gap-4">
+              <Input
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                  placeholder="Enter project name"
+                  className="flex-grow"
+              />
+              <Button type="submit">Create Project</Button>
+            </form>
+          </CardContent>
+        </Card>
+        <ProjectList />
+        <UploadsList />
       </div>
-      <ProjectList />
-      <UploadsList />
-    </div>
   );
 }
 
