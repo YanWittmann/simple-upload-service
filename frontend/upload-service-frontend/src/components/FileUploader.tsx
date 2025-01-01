@@ -22,7 +22,8 @@ export function FileUploader({ onSubmit }: FileUploaderProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <Input type="file" multiple onChange={handleFileChange} className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" />
+            <Input type="file" multiple onChange={handleFileChange}
+                   className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 min-h-12"/>
             <div className="text-sm text-gray-500">
                 {files.map((file, index) => (
                     <div key={index}>{file.name}</div>

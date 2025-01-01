@@ -2,14 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { generateDownloadUrl, useApi } from "../hooks/useApi";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from "@shadcn/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@shadcn/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@shadcn/components/ui/card";
 import { Button } from "@shadcn/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@shadcn/components/ui/tooltip";
@@ -97,8 +90,6 @@ export function UploadsList() {
     }
 
     const handleDownloadAllUploads = async (uploads: Upload[]) => {
-        // generate a zip file with all the files. all files must be requested individually.
-
         const downloadUrls = uploads.map(upload => {
             return {
                 upload: upload,
@@ -133,6 +124,38 @@ export function UploadsList() {
         });
     }
 
+    const handleDownloadAllProjectUploads = async () => {
+        const allUploads = Object.values(groupedUploads).flat();
+        const sortedUploads = allUploads.sort((a, b) => a.student_name.localeCompare(b.student_name));
+
+        // like above but with a folder per student
+        const zip = new JSZip();
+        for (const upload of sortedUploads) {
+            try {
+                const response = await fetch(generateDownloadUrl(upload.project_id, upload.student_name, upload.file_name));
+                if (!response.ok) {
+                    throw new Error('Failed to download file');
+                }
+                const blob = await response.blob();
+                zip.folder(upload.student_name)?.file(upload.file_name, blob);
+            } catch (error) {
+                console.error('Error downloading file:', error);
+                alert('Failed to download file: ' + upload.file_name);
+            }
+        }
+
+        zip.generateAsync({ type: 'blob' }).then((content) => {
+            const url = window.URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'uploads.zip';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
+    }
+
     if (isLoading) return <div className="text-center">Loading uploads...</div>
     if (error) return <div className="text-red-500 text-center">Error: {error}</div>
 
@@ -144,7 +167,7 @@ export function UploadsList() {
             <CardContent>
                 <Select value={selectedProject} onValueChange={setSelectedProject}>
                     <SelectTrigger className="w-full mb-4">
-                        <SelectValue placeholder="Select a project" />
+                        <SelectValue placeholder="Select a project"/>
                     </SelectTrigger>
                     <SelectContent>
                         {projects.map((project) => (
@@ -155,50 +178,58 @@ export function UploadsList() {
                     </SelectContent>
                 </Select>
                 {selectedProject && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                        {Object.entries(groupedUploads).map(([studentName, uploads]) => (
-                            <Card key={studentName} className="flex flex-col">
-                                <CardHeader>
-                                    <div className="flex justify-between items-center">
-                                        <CardTitle>{studentName}</CardTitle>
-                                        <Button variant="outline" size="sm" onClick={() => handleDownloadAllUploads(uploads)}>
-                                            <DownloadCloud className="h-4 w-4 mr-2" />
-                                            Download All
-                                        </Button>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="flex-grow overflow-auto">
-                                    <ul className="space-y-2">
-                                        {uploads.map((upload) => (
-                                            <li key={upload.id} className="flex items-center space-x-2">
-                                                <Download className="h-4 w-4 text-gray-500 flex-shrink-0"
-                                                    onClick={() => downloadFile(generateDownloadUrl(upload.project_id, upload.student_name, upload.file_name))}
-                                                />
-                                                <TooltipProvider>
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <a
-                                                                href={generateDownloadUrl(upload.project_id, upload.student_name, upload.file_name)}
-                                                                className="text-blue-600 hover:underline truncate max-w-[200px]"
-                                                                target={"_blank"}
-                                                            >
-                                                                {upload.file_name}
-                                                            </a>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p>Uploaded: {new Date(upload.uploaded_at).toLocaleString()}</p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                </TooltipProvider>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
-                            </Card>
-                        ))}
+                    <div className="space-y-4">
+                        <Button variant="outline" size="sm" onClick={handleDownloadAllProjectUploads}>
+                            <DownloadCloud className="h-4 w-4 mr-2"/>
+                            Download All for Project
+                        </Button>
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                            {Object.entries(groupedUploads).map(([studentName, uploads]) => (
+                                <Card key={studentName} className="flex flex-col">
+                                    <CardHeader className={"py-3 px-6"}>
+                                        <div className="flex justify-between items-center">
+                                            <CardTitle>{studentName}</CardTitle>
+                                            <Button variant="outline" size="sm"
+                                                    onClick={() => handleDownloadAllUploads(uploads)}>
+                                                <DownloadCloud className="h-4 w-4 mr-2"/>
+                                                Download All
+                                            </Button>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="flex-grow overflow-auto">
+                                        <ul className="space-y-2">
+                                            {uploads.map((upload) => (
+                                                <li key={upload.id} className="flex items-center space-x-2">
+                                                    <Download className="h-4 w-4 text-gray-500 flex-shrink-0"
+                                                              onClick={() => downloadFile(generateDownloadUrl(upload.project_id, upload.student_name, upload.file_name))}
+                                                    />
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <a
+                                                                    href={generateDownloadUrl(upload.project_id, upload.student_name, upload.file_name)}
+                                                                    className="text-blue-600 hover:underline truncate max-w-[200px]"
+                                                                    target={"_blank"}
+                                                                >
+                                                                    {upload.file_name}
+                                                                </a>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>Uploaded: {new Date(upload.uploaded_at).toLocaleString()}</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
                     </div>
                 )}
             </CardContent>
         </Card>
     )
 }
+
