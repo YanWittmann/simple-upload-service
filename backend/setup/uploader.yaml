@@ -1,0 +1,151 @@
+openapi: 3.0.3
+info:
+  title: Uploader Service API
+  description: API for managing student project uploads.
+  version: 1.0.0
+paths:
+  /index.php:
+    get:
+      summary: "Get data based on the method parameter"
+      parameters:
+        - name: method
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Method to execute. Values include `getProjects`, `getUploads`.
+        - name: project_id
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Filter uploads by project ID (required for `getUploads` method).
+        - name: student_name
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter uploads by student name (optional for `getUploads` method).
+      responses:
+        200:
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                example: [ { "id": 1, "name": "Math Project", "created_at": "2025-01-01T12:00:00" } ]
+        400:
+          description: Missing or invalid parameters.
+        404:
+          description: Method not found.
+
+    post:
+      summary: "Perform actions based on the method parameter"
+      parameters:
+        - name: method
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Method to execute. Values include `createProject`, `uploadFiles`.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the project (for `createProject` method).
+              required:
+                - name
+              example:
+                { "name": "Science Fair" }
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                project_id:
+                  type: integer
+                  description: ID of the project (required for `uploadFiles` method).
+                student_name:
+                  type: string
+                  description: Name of the student uploading files.
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+              required:
+                - project_id
+                - student_name
+                - files
+      responses:
+        200:
+          description: Action completed successfully.
+          content:
+            application/json:
+              example:
+                { "message": "Project created" }
+        400:
+          description: Missing or invalid parameters.
+
+    delete:
+      summary: "Delete a project"
+      parameters:
+        - name: method
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Must be set to `deleteProject`.
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID of the project to delete.
+      responses:
+        200:
+          description: Project deleted successfully.
+          content:
+            application/json:
+              example:
+                { "message": "Project deleted" }
+        400:
+          description: Missing project ID.
+        404:
+          description: Project not found.
+
+components:
+  schemas:
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      example:
+        { "id": 1, "name": "Math Project", "created_at": "2025-01-01T12:00:00" }
+    Upload:
+      type: object
+      properties:
+        id:
+          type: integer
+        student_name:
+          type: string
+        project_id:
+          type: integer
+        file_path:
+          type: string
+        uploaded_at:
+          type: string
+          format: date-time
+      example:
+        { "id": 1, "student_name": "John Doe", "project_id": 1, "file_path": "uploads/1/John Doe/file.txt", "uploaded_at": "2025-01-01T12:00:00" }
