@@ -85,7 +85,7 @@ function handleUploads($method)
 
         $projectId = $_POST['project_id'];
         $studentName = $_POST['student_name'];
-        $uploadDir = __DIR__ . '/../uploads/' . $projectId . '/' . $studentName;
+        $uploadDir = __DIR__ . '/../uploads/' . $projectId . 'index.php/' . $studentName;
 
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
