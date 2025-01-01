@@ -7,6 +7,11 @@ header("Access-Control-Allow-Headers: Content-Type");
 
 header("Content-Type: application/json");
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 $method = $_GET['method'] ?? null;
 
 if (!$method) {
@@ -36,13 +41,21 @@ switch ($method) {
         echo json_encode(["error" => "Unknown method"]);
 }
 
-function getProjects() {
+function sanitizeStudentName($name)
+{
+    $allowedChars = '/[^a-zA-Z0-9_\- ]/';
+    return preg_replace($allowedChars, '', $name);
+}
+
+function getProjects()
+{
     $db = Database::getConnection();
     $query = $db->query("SELECT * FROM upload_projects ORDER BY created_at DESC");
     echo json_encode($query->fetchAll(PDO::FETCH_ASSOC));
 }
 
-function createProject() {
+function createProject()
+{
     $db = Database::getConnection();
     $data = json_decode(file_get_contents('php://input'), true);
 
@@ -57,7 +70,8 @@ function createProject() {
     echo json_encode(["message" => "Project created"]);
 }
 
-function deleteProject() {
+function deleteProject()
+{
     $db = Database::getConnection();
     $id = $_GET['id'] ?? null;
 
@@ -72,10 +86,21 @@ function deleteProject() {
     echo json_encode(["message" => "Project deleted"]);
 }
 
-function getUploads() {
+function getUploads()
+{
     $db = Database::getConnection();
     $projectId = $_GET['project_id'] ?? null;
     $studentName = $_GET['student_name'] ?? null;
+
+    if (!$projectId && !$studentName) {
+        http_response_code(400);
+        echo json_encode(["error" => "Project ID or student name required"]);
+        return;
+    }
+
+    if ($studentName) {
+        $studentName = sanitizeStudentName($studentName);
+    }
 
     $query = "SELECT * FROM upload_files";
     $params = [];
@@ -97,7 +122,8 @@ function getUploads() {
     echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 
-function uploadFiles() {
+function uploadFiles()
+{
     $db = Database::getConnection();
 
     if (!isset($_POST['project_id']) || !isset($_POST['student_name']) || !isset($_FILES['files'])) {
@@ -107,7 +133,7 @@ function uploadFiles() {
     }
 
     $projectId = $_POST['project_id'];
-    $studentName = $_POST['student_name'];
+    $studentName = sanitizeStudentName($_POST['student_name']);
     $uploadDir = __DIR__ . '/../uploads/' . $projectId . '/' . $studentName;
 
     if (!is_dir($uploadDir)) {
