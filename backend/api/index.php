@@ -12,13 +12,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$method = $_GET['method'] ?? null;
+$method = $_GET['method'] ?? $_POST['method'] ?? null;
 
 if (!$method) {
     http_response_code(400);
     echo json_encode(["error" => "Method not specified"]);
     exit;
 }
+
+authCheck();
 
 switch ($method) {
     case 'getProjects':
@@ -36,9 +38,16 @@ switch ($method) {
     case 'uploadFiles':
         uploadFiles();
         break;
+    case 'authCheck':
+        // already checked
+        break;
     default:
         http_response_code(404);
         echo json_encode(["error" => "Unknown method"]);
+}
+
+function authCheck() {
+    include_once 'adminauth.php';
 }
 
 function sanitizeStudentName($name)

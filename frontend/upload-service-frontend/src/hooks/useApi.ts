@@ -28,6 +28,21 @@ export function useApi<T>() {
             url.searchParams.append(key, value);
         });
 
+        if (!body) {
+            body = {};
+        }
+
+        if (body) {
+            const password = localStorage.getItem('adminPassword');
+            if (password) {
+                if (body instanceof FormData) {
+                    body.append('password', password);
+                } else {
+                    (body as Record<string, unknown>).password = password;
+                }
+            }
+        }
+
         try {
             const response = await fetch(url.toString(), {
                 method: body ? 'POST' : 'GET',
@@ -36,6 +51,11 @@ export function useApi<T>() {
             });
 
             if (!response.ok) {
+                const data = await response.json();
+                if (data.error === 'Invalid password') {
+                    localStorage.setItem('adminAuthenticated', 'false');
+                    localStorage.removeItem('adminPassword');
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 

@@ -1,37 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AdminDashboard } from "./AdminDashboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@shadcn/components/ui/card";
 import { Input } from "@shadcn/components/ui/input";
 import { Button } from "@shadcn/components/ui/button";
+import { useApi } from "../hooks/useApi";
 
-import hash from 'hash.js';
-
-const ADMIN_PASSWORD = 'ac3fafe4183d9714894fc7f97bdfe4b79688638c437491d6b4e452f8a3df656d';
-
-function hashPassword(password: string) {
-    return hash.sha256().update(password).digest('hex');
+interface AuthResponse {
 }
 
 export function AdminLogin() {
     const [password, setPassword] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('adminAuthenticated') === 'true');
+    const { fetchData, isLoading, error } = useApi<AuthResponse>();
 
     if (isAuthenticated) {
-        return <AdminDashboard />;
+        return <AdminDashboard/>;
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(hashPassword(password))
-        if (hashPassword(password) === ADMIN_PASSWORD) {
-            localStorage.setItem('adminAuthenticated', 'true');
-            setIsAuthenticated(true);
-        } else {
-            localStorage.setItem('adminAuthenticated', 'false');
-            setIsAuthenticated(false);
-            alert('Incorrect password');
-        }
+        await checkPassword();
     };
+
+    async function checkPassword() {
+        await fetchData('authCheck', {}, { password, generate_response: 'true' })
+            .then((data) => {
+                localStorage.setItem('adminAuthenticated', 'true');
+                localStorage.setItem('adminPassword', password);
+                setIsAuthenticated(true);
+            })
+            .catch(() => {
+                localStorage.setItem('adminAuthenticated', 'false');
+                localStorage.removeItem('adminPassword');
+                setIsAuthenticated(false);
+                alert('Incorrect password');
+            });
+    }
 
     return (
         <Card className="max-w-md mx-auto mt-8">
