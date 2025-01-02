@@ -91,7 +91,7 @@ export function ProjectList({ onProjectClick, selectedProject }: ProjectListProp
                             </CardHeader>
                             <CardContent className="flex-grow pb-4">
 
-                                <Badge className="mr-1 cursor-default">
+                                <Badge className="mr-1 mb-2 cursor-default">
                                     <User className="h-4 w-4 mr-2"/>
                                     {project.students} students
                                 </Badge>

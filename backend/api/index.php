@@ -22,7 +22,6 @@ if (!$method) {
 
 switch ($method) {
     case 'getProjects':
-        authCheck();
         getProjects();
         break;
     case 'createProject':
@@ -34,6 +33,7 @@ switch ($method) {
         deleteProject();
         break;
     case 'getUploads':
+        authCheck();
         getUploads();
         break;
     case 'uploadFiles':
