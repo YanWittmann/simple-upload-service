@@ -20,16 +20,17 @@ if (!$method) {
     exit;
 }
 
-authCheck();
-
 switch ($method) {
     case 'getProjects':
+        authCheck();
         getProjects();
         break;
     case 'createProject':
+        authCheck();
         createProject();
         break;
     case 'deleteProject':
+        authCheck();
         deleteProject();
         break;
     case 'getUploads':
@@ -39,7 +40,7 @@ switch ($method) {
         uploadFiles();
         break;
     case 'authCheck':
-        // already checked
+        authCheck();
         break;
     default:
         http_response_code(404);
@@ -60,7 +61,23 @@ function getProjects()
 {
     $db = Database::getConnection();
     $query = $db->query("SELECT * FROM upload_projects ORDER BY created_at DESC");
-    echo json_encode($query->fetchAll(PDO::FETCH_ASSOC));
+    $projects = json_encode($query->fetchAll(PDO::FETCH_ASSOC));
+
+    $projects = json_decode($projects, true);
+    foreach ($projects as $key => $project) {
+        // for each project add the amount of files uploaded
+        $stmt = $db->prepare("SELECT COUNT(*) FROM upload_files WHERE project_id = :project_id");
+        $stmt->execute([':project_id' => $project['id']]);
+        $projects[$key]['files'] = $stmt->fetchColumn();
+
+        // for each project add the amount of distinct students that uploaded files
+        $stmt = $db->prepare("SELECT COUNT(DISTINCT student_name) FROM upload_files WHERE project_id = :project_id");
+        $stmt->execute([':project_id' => $project['id']]);
+        $projects[$key]['students'] = $stmt->fetchColumn();
+    }
+    $projects = json_encode($projects);
+
+    echo $projects;
 }
 
 function createProject()

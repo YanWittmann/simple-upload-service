@@ -74,3 +74,7 @@ export function useApi<T>() {
 export function generateDownloadUrl(projectId: number, userName: string, fileName: string) {
     return `${BASE_URL}/uploads/${projectId}/${userName}/${fileName}`;
 }
+
+export function createShareUrl(project: number) {
+    return `${BASE_URL}?p=${project}`;
+}

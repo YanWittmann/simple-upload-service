@@ -8,6 +8,7 @@ import { Button } from "@shadcn/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@shadcn/components/ui/tooltip";
 import { Download, DownloadCloud } from 'lucide-react';
 import JSZip from "jszip";
+import { Project } from "./ProjectList";
 
 interface Upload {
     id: number
@@ -18,24 +19,19 @@ interface Upload {
     uploaded_at: string
 }
 
-interface Project {
-    id: number
-    name: string
-}
-
 interface GroupedUploads {
     [studentName: string]: Upload[]
 }
 
-export function UploadsList() {
-    const [groupedUploads, setGroupedUploads] = useState<GroupedUploads>({})
-    const [projects, setProjects] = useState<Project[]>([])
-    const [selectedProject, setSelectedProject] = useState<string>('')
-    const { fetchData, isLoading, error } = useApi<Upload[]>()
+interface UploadsListProps {
+    selectedProject: Project | null
+}
 
-    useEffect(() => {
-        fetchProjects()
-    }, [])
+export function UploadsList(
+    { selectedProject }: UploadsListProps
+) {
+    const [groupedUploads, setGroupedUploads] = useState<GroupedUploads>({})
+    const { fetchData, isLoading, error } = useApi<Upload[]>()
 
     useEffect(() => {
         if (selectedProject) {
@@ -43,18 +39,9 @@ export function UploadsList() {
         }
     }, [selectedProject])
 
-    const fetchProjects = async () => {
+    const fetchUploads = async (project: Project) => {
         try {
-            const data = await fetchData('getProjects')
-            setProjects(data)
-        } catch (error) {
-            console.error('Failed to fetch projects:', error)
-        }
-    }
-
-    const fetchUploads = async (projectId: string) => {
-        try {
-            const data = await fetchData('getUploads', { project_id: projectId })
+            const data = await fetchData('getUploads', { project_id: project.id.toString() })
             const grouped = data.reduce((acc: GroupedUploads, upload: Upload) => {
                 if (!acc[upload.student_name]) {
                     acc[upload.student_name] = []
@@ -165,18 +152,7 @@ export function UploadsList() {
                 <CardTitle>Uploads</CardTitle>
             </CardHeader>
             <CardContent>
-                <Select value={selectedProject} onValueChange={setSelectedProject}>
-                    <SelectTrigger className="w-full mb-4">
-                        <SelectValue placeholder="Select a project"/>
-                    </SelectTrigger>
-                    <SelectContent>
-                        {projects.map((project) => (
-                            <SelectItem key={project.id} value={project.id.toString()}>
-                                {project.name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                {!selectedProject && <p className="text-center">Click on a project above to view uploads.</p>}
                 {selectedProject && (
                     <div className="space-y-4">
                         <Button variant="outline" size="sm" onClick={handleDownloadAllProjectUploads}>

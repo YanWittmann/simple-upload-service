@@ -26,7 +26,7 @@ const LoadingSpinner = ({ className }: { className?: string }) => {
             strokeLinejoin="round"
             className={cn("animate-spin", className)}
         >
-            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
         </svg>
     );
 };
@@ -41,7 +41,18 @@ export function StudentView() {
 
     useEffect(() => {
         fetchData('getProjects')
-            .then((data) => setProjects(data))
+            .then((data) => {
+                setProjects(data);
+                const urlSearchParams = new URLSearchParams(window.location.search);
+                const startProject = urlSearchParams.get('p');
+                if (startProject) {
+                    // check if project exists
+                    const projectExists = data.some((project: Project) => project.id.toString() === startProject);
+                    if (projectExists){
+                        setSelectedProject(startProject);
+                    }
+                }
+            })
             .catch((error) => setErrorMessage('Failed to fetch projects.'));
     }, []);
 

@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { AdminDashboard } from "./AdminDashboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@shadcn/components/ui/card";
 import { Input } from "@shadcn/components/ui/input";
 import { Button } from "@shadcn/components/ui/button";
 import { useApi } from "../hooks/useApi";
+import { Loader2 } from 'lucide-react';
 
 interface AuthResponse {
 }
@@ -38,21 +39,32 @@ export function AdminLogin() {
     }
 
     return (
-        <Card className="max-w-md mx-auto mt-8">
-            <CardHeader>
-                <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <Input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter admin password"
-                    />
-                    <Button type="submit" className="w-full">Login</Button>
-                </form>
-            </CardContent>
-        </Card>
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <Card className="w-full max-w-md">
+                <CardHeader>
+                    <CardTitle className="text-2xl font-bold text-center">Admin Login</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <Input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter admin password"
+                        />
+                        <Button type="submit" className="w-full" disabled={isLoading}>
+                            {isLoading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                                    Logging in...
+                                </>
+                            ) : (
+                                'Login'
+                            )}
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
+        </div>
     );
 }

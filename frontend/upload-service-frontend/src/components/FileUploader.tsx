@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Input } from "@shadcn/components/ui/input";
+import React, { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { Button } from "@shadcn/components/ui/button";
 
 interface FileUploaderProps {
@@ -9,11 +9,11 @@ interface FileUploaderProps {
 export function FileUploader({ onSubmit }: FileUploaderProps) {
     const [files, setFiles] = useState<File[]>([]);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            setFiles(Array.from(e.target.files));
-        }
-    };
+    const onDrop = useCallback((acceptedFiles: File[]) => {
+        setFiles(acceptedFiles);
+    }, []);
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -22,8 +22,19 @@ export function FileUploader({ onSubmit }: FileUploaderProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <Input type="file" multiple onChange={handleFileChange}
-                   className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 min-h-12"/>
+            <div
+                {...getRootProps()}
+                className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer ${
+                    isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                }`}
+            >
+                <input {...getInputProps()} />
+                {isDragActive ? (
+                    <p>Drop the files here ...</p>
+                ) : (
+                    <p>Drop files here, or click to select files</p>
+                )}
+            </div>
             <div className="text-sm text-gray-500">
                 {files.map((file, index) => (
                     <div key={index}>{file.name}</div>
