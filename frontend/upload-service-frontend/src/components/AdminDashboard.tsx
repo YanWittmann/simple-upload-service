@@ -30,7 +30,7 @@ export function AdminDashboard() {
 
     return (
         <div className="space-y-8 max-w-7xl mx-auto mt-1 px-4">
-            <ProjectList onProjectClick={handleProjectClicked}/>
+            <ProjectList onProjectClick={handleProjectClicked} selectedProject={selectedProject}/>
             <UploadsList selectedProject={selectedProject}/>
 
             <Button onClick={() => {

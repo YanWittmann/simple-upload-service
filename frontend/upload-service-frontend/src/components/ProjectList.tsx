@@ -9,6 +9,7 @@ import { File, PlusCircle, Share2, Trash2, User } from 'lucide-react';
 import { useApi } from "../hooks/useApi";
 import { NewProjectModal } from './NewProjectModal';
 import { ShareProjectModal } from "./ShareProjectModal";
+import { cn } from "@shadcn/lib/utils";
 
 export interface Project {
     id: number
@@ -20,9 +21,10 @@ export interface Project {
 
 interface ProjectListProps {
     onProjectClick: (project: Project | null) => void
+    selectedProject: Project | null
 }
 
-export function ProjectList({ onProjectClick }: ProjectListProps) {
+export function ProjectList({ onProjectClick, selectedProject }: ProjectListProps) {
     const [projects, setProjects] = useState<Project[]>([])
     const { fetchData, isLoading, error } = useApi<Project[]>()
     const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false)
@@ -71,13 +73,14 @@ export function ProjectList({ onProjectClick }: ProjectListProps) {
 
     return (
         <Card>
-            <CardHeader>
+            <CardHeader className="pt-5 pb-5">
                 <CardTitle>Projects</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {projects.map((project) => (
-                        <Card key={project.id} className="flex flex-col cursor-pointer"
+                        <Card key={project.id}
+                              className={cn("flex flex-col cursor-pointer", selectedProject === project ? 'border-2 border-blue-500' : "border-2 border-white-500")}
                               onClick={() => onProjectClick(project)}>
                             <CardHeader className="py-3 px-6">
                                 <CardTitle className="flex justify-between items-center">
