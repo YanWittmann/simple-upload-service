@@ -5,9 +5,21 @@ Designed to be used in a school context, where students can upload their files t
 
 ## Screenshots
 
-![Admin view](doc/admin-view.png)
+<!--
+<img alt="Admin view" src="doc/admin-view.png"/>
 
-![Student view](doc/student-view.png)
+<img alt="Student view" src="doc/student-view.png"/>
+-->
+<table>
+    <tr>
+        <td>
+            <img alt="Admin view" src="doc/admin-view.png" height="300"/>
+        </td>
+        <td>
+            <img alt="Student view" src="doc/student-view.png" height="300"/>
+        </td>
+    </tr>
+</table>
 
 ## Deploy
 
