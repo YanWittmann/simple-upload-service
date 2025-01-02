@@ -39,7 +39,7 @@ export function AdminLogin() {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex items-center justify-center min-h-80 bg-gray-100">
             <Card className="w-full max-w-md">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center">Admin Login</CardTitle>
@@ -53,14 +53,10 @@ export function AdminLogin() {
                             placeholder="Enter admin password"
                         />
                         <Button type="submit" className="w-full" disabled={isLoading}>
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
-                                    Logging in...
-                                </>
-                            ) : (
-                                'Login'
-                            )}
+                            {isLoading ? (<>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                                Logging in...
+                            </>) : ('Login')}
                         </Button>
                     </form>
                 </CardContent>

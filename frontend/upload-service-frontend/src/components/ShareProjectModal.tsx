@@ -25,7 +25,7 @@ export function ShareProjectModal({ isOpen, onClose, project }: ShareProjectModa
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Share Project: {project.name}</DialogTitle>
+                    <DialogTitle className="select-none">Share Project: {project.name}</DialogTitle>
                 </DialogHeader>
                 {shareUrl}
                 <DialogFooter className="sm:justify-start">

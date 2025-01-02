@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApi } from '../hooks/useApi';
 import { Project, ProjectList } from './ProjectList';
 import { UploadsList } from './UploadsList';
+import { Button } from "@shadcn/components/ui/button";
 
 export function AdminDashboard() {
     const [newProjectName, setNewProjectName] = useState('');
@@ -28,9 +29,15 @@ export function AdminDashboard() {
     if (error) return <div className="text-red-500 text-center">Error: {error}</div>;
 
     return (
-        <div className="space-y-8 max-w-7xl mx-auto mt-8 px-4">
+        <div className="space-y-8 max-w-7xl mx-auto mt-1 px-4">
             <ProjectList onProjectClick={handleProjectClicked}/>
             <UploadsList selectedProject={selectedProject}/>
+
+            <Button onClick={() => {
+                localStorage.removeItem('adminAuthenticated');
+                localStorage.removeItem('adminPassword');
+                window.location.reload();
+            }}>Logout</Button>
         </div>
     );
 }

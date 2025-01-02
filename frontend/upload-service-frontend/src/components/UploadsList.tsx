@@ -179,19 +179,21 @@ export function UploadsList(
                                                     <Download className="h-4 w-4 text-gray-500 flex-shrink-0"
                                                               onClick={() => downloadFile(generateDownloadUrl(upload.project_id, upload.student_name, upload.file_name))}
                                                     />
-                                                    <TooltipProvider>
+                                                    <TooltipProvider delayDuration={400}>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <a
                                                                     href={generateDownloadUrl(upload.project_id, upload.student_name, upload.file_name)}
-                                                                    className="text-blue-600 hover:underline truncate max-w-[200px]"
-                                                                    target={"_blank"}
-                                                                >
+                                                                    className="text-blue-600 hover:underline truncate"
+                                                                    target={"_blank"}>
                                                                     {upload.file_name}
                                                                 </a>
                                                             </TooltipTrigger>
                                                             <TooltipContent>
-                                                                <p>Uploaded: {new Date(upload.uploaded_at).toLocaleString()}</p>
+                                                                <p>{new Date(upload.uploaded_at).toLocaleString()}</p>
+                                                                {upload.file_name.match(/\.(jpeg|jpg|gif|png)$/) && (
+                                                                    <img src={generateDownloadUrl(upload.project_id, upload.student_name, upload.file_name)} alt={upload.file_name} className="mt-2 max-w-xs rounded"/>
+                                                                )}
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     </TooltipProvider>

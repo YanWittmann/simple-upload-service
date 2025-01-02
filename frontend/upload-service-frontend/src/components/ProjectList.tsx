@@ -77,7 +77,8 @@ export function ProjectList({ onProjectClick }: ProjectListProps) {
             <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {projects.map((project) => (
-                        <Card key={project.id} className="flex flex-col" onClick={() => onProjectClick(project)}>
+                        <Card key={project.id} className="flex flex-col cursor-pointer"
+                              onClick={() => onProjectClick(project)}>
                             <CardHeader className="py-3 px-6">
                                 <CardTitle className="flex justify-between items-center">
                                     {project.name} <span className="text-sm text-gray-500">
@@ -85,13 +86,13 @@ export function ProjectList({ onProjectClick }: ProjectListProps) {
                                 </span>
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="flex-grow pb-4 cursor-pointer">
+                            <CardContent className="flex-grow pb-4">
 
-                                <Badge className="mr-1">
+                                <Badge className="mr-1 cursor-default">
                                     <User className="h-4 w-4 mr-2"/>
                                     {project.students} students
                                 </Badge>
-                                <Badge className="mr-1">
+                                <Badge className="mr-1 cursor-default">
                                     <File className="h-4 w-4 mr-2"/>
                                     {project.files} files
                                 </Badge>
@@ -101,7 +102,7 @@ export function ProjectList({ onProjectClick }: ProjectListProps) {
                                     Share
                                 </Badge>
 
-                                <TooltipProvider>
+                                <TooltipProvider delayDuration={100}>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <Badge variant="destructive" className="mr-1 cursor-pointer"
